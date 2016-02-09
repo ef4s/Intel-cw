@@ -216,9 +216,10 @@ def PrincipalComponents(theData):
 #
 # main program part for Coursework 1
 #
+resultsFile ="IDAPIResults01.txt"
 noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("Neurones.txt")
 theData = array(datain)
-AppendString("results.txt","Coursework One Results by ple15")
+AppendString(resultsFile,"Coursework One Results by ple15")
 AppendString("results.txt","") #blank line
 AppendString("results.txt","The prior probability of node 0")
 prior = Prior(theData, 0, noStates)

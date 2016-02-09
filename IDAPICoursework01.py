@@ -216,31 +216,32 @@ def PrincipalComponents(theData):
 #
 # main program part for Coursework 1
 #
+resultsFile ="IDAPIResults01.txt"
 noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("Neurones.txt")
 theData = array(datain)
-AppendString("results.txt","Coursework One Results by ple15")
-AppendString("results.txt","") #blank line
-AppendString("results.txt","The prior probability of node 0")
+AppendString(resultsFile,"Coursework One Results by ple15")
+AppendString(resultsFile,"") #blank line
+AppendString(resultsFile,"The prior probability of node 0")
 prior = Prior(theData, 0, noStates)
-AppendList("results.txt", prior)
-AppendString("results.txt", "")
+AppendList(resultsFile, prior)
+AppendString(resultsFile, "")
 
-AppendString("results.txt","The conditional probability matrix P(2|0) calculated from the data.")
+AppendString(resultsFile,"The conditional probability matrix P(2|0) calculated from the data.")
 cPT = CPT(theData, 2, 0, noStates)
-AppendArray("results.txt", cPT)
-AppendString("results.txt", "")
+AppendArray(resultsFile, cPT)
+AppendString(resultsFile, "")
 
-AppendString("results.txt","The joint probability matrix P(2&0) calculated from the data.")
+AppendString(resultsFile,"The joint probability matrix P(2&0) calculated from the data.")
 jPT = JPT(theData, 2, 0, noStates)
-AppendArray("results.txt", jPT)
-AppendString("results.txt", "")
+AppendArray(resultsFile, jPT)
+AppendString(resultsFile, "")
 
-AppendString("results.txt","The conditional probability matrix P(2j0) calculated from the joint probability matrix P(2&0).")
+AppendString(resultsFile,"The conditional probability matrix P(2j0) calculated from the joint probability matrix P(2&0).")
 aCPT = JPT2CPT(jPT)
-AppendArray("results.txt", aCPT)
-AppendString("results.txt", "")
+AppendArray(resultsFile, aCPT)
+AppendString(resultsFile, "")
 
-AppendString("results.txt","The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network")
+AppendString(resultsFile,"The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network")
 #To represent a naive network in Python we will use a list containing an entry for each node
 #(in numeric order) giving the associated probability table: [prior, cpt1, cpt2, cpt3, cpt4, cpt5]
 naiveBayes = []
@@ -253,15 +254,15 @@ for i in range(1, 6):
 #A query is a list of the instantiated states of the child nodes, for example [1,0,3,2,0].
 #The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network
 #query = [1,0,3,2,0]
-AppendString("results.txt","Query [4,0,0,0,5]")
+AppendString(resultsFile,"Query [4,0,0,0,5]")
 query = [4,0,0,0,5]
 pdfOverRoot = Query(query, naiveBayes) 
-AppendList("results.txt", pdfOverRoot)
+AppendList(resultsFile, pdfOverRoot)
 
-AppendString("results.txt", "")
-AppendString("results.txt","Query [6,5,2,5,5] ")
+AppendString(resultsFile, "")
+AppendString(resultsFile,"Query [6,5,2,5,5] ")
 query = [6,5,2,5,5]
 pdfOverRoot = Query(query, naiveBayes) 
-AppendList("results.txt", pdfOverRoot)
+AppendList(resultsFile, pdfOverRoot)
 
 
