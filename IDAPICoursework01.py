@@ -3,65 +3,74 @@
 # Coursework in Python 
 from IDAPICourseworkLibrary import *
 from numpy import *
+
+
 #
 # Coursework 1 begins here
 #
 # Function to compute the prior distribution of the variable root from the data set
 def Prior(theData, root, noStates):
-    prior = zeros((noStates[root]), float )
-# Coursework 1 task 1 should be inserted here
+    prior = zeros((noStates[root]), float)
+    # Coursework 1 task 1 should be inserted here
     bc = bincount(theData[:, root])
     prior = bc / float(sum(bc))
-# end of Coursework 1 task 1
+    # end of Coursework 1 task 1
     return prior
-  
+
+
 # Function to compute a CPT with parent node varP and xchild node varC from the data array
 # it is assumed that the states are designated by consecutive integers starting with 0
 def CPT(theData, varC, varP, noStates):
-    cPT = zeros((noStates[varC], noStates[varP]), float )
-# Coursework 1 task 2 should be inserted here
-    for row in theData[:,[varC, varP]]:
-    	cPT[row[0], row[1]] += 1
-	
+    cPT = zeros((noStates[varC], noStates[varP]), float)
+    # Coursework 1 task 2 should be inserted here
+    for row in theData[:, [varC, varP]]:
+        cPT[row[0], row[1]] += 1
+
     cPT /= sum(cPT, axis=0)
-# end of coursework 1 task 2
+    # end of coursework 1 task 2
     return cPT
-  
+
+
 # Function to calculate the joint probability table of two variables in the data set
 def JPT(theData, varRow, varCol, noStates):
-    jPT = zeros((noStates[varRow], noStates[varCol]), float )
-#Coursework 1 task 3 should be inserted here 
-    for row in theData[:,[varRow, varCol]]:
-	jPT[row[0], row[1]] += 1
-	
+    jPT = zeros((noStates[varRow], noStates[varCol]), float)
+    # Coursework 1 task 3 should be inserted here
+    for row in theData[:, [varRow, varCol]]:
+        jPT[row[0], row[1]] += 1
+
     jPT /= sum(jPT)
-# end of coursework 1 task 3
+    # end of coursework 1 task 3
     return jPT
+
+
 #
 # Function to convert a joint probability table to a conditional probability table
 def JPT2CPT(aJPT):
-#Coursework 1 task 4 should be inserted here 
+    # Coursework 1 task 4 should be inserted here
     aJPT /= sum(aJPT, axis=0)
-    
-# coursework 1 taks 4 ends here
+
+    # coursework 1 taks 4 ends here
     return aJPT
+
 
 #
 # Function to query a naive Bayesian network
-def Query(theQuery, naiveBayes): 
+def Query(theQuery, naiveBayes):
     rootPdf = zeros((naiveBayes[0].shape[0]), float)
-# Coursework 1 task 5 should be inserted here
-#Finally complete the function Query which calculates the probability distribution over the root node of a naive
-# Bayesian network.
-#The returned value is a list (or vector) giving the posterior probability distribution over the states of the root
-#node, for example [0.1,0.3,0.4,0.2].
+    # Coursework 1 task 5 should be inserted here
+    # Finally complete the function Query which calculates the probability distribution over the root node of a naive
+    # Bayesian network.
+    # The returned value is a list (or vector) giving the posterior probability distribution over the states of the root
+    # node, for example [0.1,0.3,0.4,0.2].
     rootPdf += naiveBayes[0]
     for i in range(len(theQuery)):
         rootPdf *= naiveBayes[i + 1][theQuery[i]]
 
     rootPdf /= sum(rootPdf)
-# end of coursework 1 task 5
+    # end of coursework 1 task 5
     return rootPdf
+
+
 #
 # End of Coursework 1
 #
@@ -69,55 +78,129 @@ def Query(theQuery, naiveBayes):
 #
 # Calculate the mutual information from the joint probability table of two variables
 def MutualInformation(jP):
-    mi=0.0
-# Coursework 2 task 1 should be inserted here
-   
+    mi = 0.0
+    # Coursework 2 task 1 should be inserted here
+    # calculate the marginalised distributions
+    pX = sum(jP, axis=0)
+    pX /= sum(pX)
+    pY = sum(jP, axis=1)
+    pY /= sum(pY)
+    print(pX)
+    print(pY)
+    # compute the mutual information
+    for x in range(len(jP)):
+        for y in range(len(jP)):
+            print(jP[x][y], jP[x][y] / (pX[x] * pY[y]), x, y)
+            if (pX[x] * pX[y] != 0.):
+                print(pX[x] * pX[y])
+                i = jP[x][y] * math.log(jP[x][y] / (pX[x] * pY[y]), 2)
+                mi += i
+            # print(pX[x], pY[x], math.log(pX[x] / pY[x], 2))
+            # i = pX[x] * math.log(pX[x] / pY[x], 2)
+            # print(i)
+            # mi += i
 
-# end of coursework 2 task 1
+            # end of coursework 2 task 1
     return mi
+
+
 #
 # construct a dependency matrix for all the variables
 def DependencyMatrix(theData, noVariables, noStates):
-    MIMatrix = zeros((noVariables,noVariables))
-# Coursework 2 task 2 should be inserted here
-    
+    MIMatrix = zeros((noVariables, noVariables))
+    # Coursework 2 task 2 should be inserted here
+    for x in range(noVariables):
+        for y in range(x, noVariables):
+            jP = JPT(theData, x, y, noStates)
+            i = MutualInformation(jP)
+            MIMatrix[x][y] = i
+            MIMatrix[y][x] = i
 
-# end of coursework 2 task 2
+        # end of coursework 2 task 2
     return MIMatrix
-# Function to compute an ordered list of dependencies 
-def DependencyList(depMatrix):
-    depList=[]
-# Coursework 2 task 3 should be inserted here
-    
 
-# end of coursework 2 task 3
+
+# Function to compute an ordered list of dependencies
+def DependencyList(depMatrix):
+    depList = []
+    # Coursework 2 task 3 should be inserted here
+    for x in range(len(depMatrix)):
+        for y in range(len(depMatrix)):
+            depList.append([depMatrix[x][y], x, y])
+
+    depList2 = sort(depList, axis=0)
+    # end of coursework 2 task 3
     return array(depList2)
+
+
 #
 # Functions implementing the spanning tree algorithm
 # Coursework 2 task 4
 
 def SpanningTreeAlgorithm(depList, noVariables):
     spanningTree = []
-  
+
+    # Add arcs in order given, provided resulting structure has no loops
+    for arc in depList:
+        if(not CausesLoops(spanningTree, arc[1:])):
+            spanningTree.append(arc[1:])
+    # A loop is given when we can connect L1 with L2 through the spanning tree
     return array(spanningTree)
+
+
 #
 # End of coursework 2
 #
+def CausesLoops(spanningTree, proposedArc):
+    # If start or end nodes do not exist in the spanning tree then we can return false immediately
+    n = len(spanningTree)
+
+    leadingEdge = proposedArc
+    visited = proposedArc
+
+    # Find all instances of variables in the leading edge, and expand any connected arcs
+    # If there are no more instances of the leading edge in the remaining unexpanded tree, remove from leading edge
+    for node in leadingEdge:
+        for arc in len(spanningTree):
+            if (node in arc):
+                newNode = arc[0]
+                if (arc[0] == node):
+                    newNode = arc[1]
+
+                if (newNode in visited):
+                    # We have found an alternative route to our objective, return true
+                    return True
+                else:
+                    # This is a new location, and we should add it to the visited and leading edge lists
+                    visited.append(newNode)
+                    leadingEdge.append(newNode)
+                    spanningTree.remove(arc)
+
+        # Since this is a breadth first search, we are now finished with this node and can remove it from the leading
+        # edge
+
+        leadingEdge.remove(node)
+
+    # If we've got here then every path has been explored and we have not found a loop
+    return False
+
 # Coursework 3 begins here
 #
 # Function to compute a CPT with multiple parents from he data set
 # it is assumed that the states are designated by consecutive integers starting with 0
 def CPT_2(theData, child, parent1, parent2, noStates):
-    cPT = zeros([noStates[child],noStates[parent1],noStates[parent2]], float )
-# Coursework 3 task 1 should be inserted here
-   
+    cPT = zeros([noStates[child], noStates[parent1], noStates[parent2]], float)
+    # Coursework 3 task 1 should be inserted here
 
-# End of Coursework 3 task 1           
+
+    # End of Coursework 3 task 1
     return cPT
+
+
 #
 # Definition of a Bayesian Network
 def ExampleBayesianNetwork(theData, noStates):
-    arcList = [[0],[1],[2,0],[3,2,1],[4,3],[5,3]]
+    arcList = [[0], [1], [2, 0], [3, 2, 1], [4, 3], [5, 3]]
     cpt0 = Prior(theData, 0, noStates)
     cpt1 = Prior(theData, 1, noStates)
     cpt2 = CPT(theData, 2, 0, noStates)
@@ -126,6 +209,8 @@ def ExampleBayesianNetwork(theData, noStates):
     cpt5 = CPT(theData, 5, 3, noStates)
     cptList = [cpt0, cpt1, cpt2, cpt3, cpt4, cpt5]
     return arcList, cptList
+
+
 # Coursework 3 task 2 begins here
 
 # end of coursework 3 task 2
@@ -133,29 +218,35 @@ def ExampleBayesianNetwork(theData, noStates):
 # Function to calculate the MDL size of a Bayesian Network
 def MDLSize(arcList, cptList, noDataPoints, noStates):
     mdlSize = 0.0
-# Coursework 3 task 3 begins here
+    # Coursework 3 task 3 begins here
 
 
-# Coursework 3 task 3 ends here 
-    return mdlSize 
+    # Coursework 3 task 3 ends here
+    return mdlSize
+
+
 #
 # Function to calculate the joint probability of a single data point in a Network
 def JointProbability(dataPoint, arcList, cptList):
     jP = 1.0
-# Coursework 3 task 4 begins here
+    # Coursework 3 task 4 begins here
 
 
-# Coursework 3 task 4 ends here 
+    # Coursework 3 task 4 ends here
     return jP
+
+
 #
 # Function to calculate the MDLAccuracy from a data set
 def MDLAccuracy(theData, arcList, cptList):
-    mdlAccuracy=0
-# Coursework 3 task 5 begins here
+    mdlAccuracy = 0
+    # Coursework 3 task 5 begins here
 
 
-# Coursework 3 task 5 ends here 
+    # Coursework 3 task 5 ends here
     return mdlAccuracy
+
+
 #
 # End of coursework 2
 #
@@ -163,7 +254,7 @@ def MDLAccuracy(theData, arcList, cptList):
 #
 def Mean(theData):
     realData = theData.astype(float)
-    noVariables=theData.shape[1] 
+    noVariables = theData.shape[1]
     mean = []
     # Coursework 4 task 1 begins here
 
@@ -175,18 +266,22 @@ def Mean(theData):
 
 def Covariance(theData):
     realData = theData.astype(float)
-    noVariables=theData.shape[1] 
+    noVariables = theData.shape[1]
     covar = zeros((noVariables, noVariables), float)
     # Coursework 4 task 2 begins here
 
 
     # Coursework 4 task 2 ends here
     return covar
-def CreateEigenfaceFiles(theBasis):
-    adummystatement = 0 #delete this when you do the coursework
-    # Coursework 4 task 3 begins here
 
-    # Coursework 4 task 3 ends here
+
+def CreateEigenfaceFiles(theBasis):
+    adummystatement = 0  # delete this when you do the coursework
+
+
+# Coursework 4 task 3 begins here
+
+# Coursework 4 task 3 ends here
 
 def ProjectFace(theBasis, theMean, theFaceImage):
     magnitudes = []
@@ -195,74 +290,81 @@ def ProjectFace(theBasis, theMean, theFaceImage):
     # Coursework 4 task 4 ends here
     return array(magnitudes)
 
-def CreatePartialReconstructions(aBasis, aMean, componentMags):
-    adummystatement = 0  #delete this when you do the coursework
-    # Coursework 4 task 5 begins here
 
-    # Coursework 4 task 5 ends here
+def CreatePartialReconstructions(aBasis, aMean, componentMags):
+    adummystatement = 0  # delete this when you do the coursework
+
+
+# Coursework 4 task 5 begins here
+
+# Coursework 4 task 5 ends here
 
 def PrincipalComponents(theData):
     orthoPhi = []
     # Coursework 4 task 3 begins here
     # The first part is almost identical to the above Covariance function, but because the
     # data has so many variables you need to use the Kohonen Lowe method described in lecture 15
-    # The output should be a list of the principal components normalised and sorted in descending 
+    # The output should be a list of the principal components normalised and sorted in descending
     # order of their eignevalues magnitudes
 
-    
+
     # Coursework 4 task 6 ends here
     return array(orthoPhi)
+
 
 #
 # main program part for Coursework 1
 #
-resultsFile ="IDAPIResults01.txt"
-noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("Neurones.txt")
-theData = array(datain)
-AppendString(resultsFile,"Coursework One Results by ple15")
-AppendString(resultsFile,"") #blank line
-AppendString(resultsFile,"The prior probability of node 0")
-prior = Prior(theData, 0, noStates)
-AppendList(resultsFile, prior)
-AppendString(resultsFile, "")
+# resultsFile ="IDAPIResults01.txt"
+# noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("Neurones.txt")
+# theData = array(datain)
+# AppendString(resultsFile,"Coursework One Results by ple15")
+# AppendString(resultsFile,"") #blank line
+# AppendString(resultsFile,"The prior probability of node 0")
+# prior = Prior(theData, 0, noStates)
+# AppendList(resultsFile, prior)
+# AppendString(resultsFile, "")
+#
+# AppendString(resultsFile,"The conditional probability matrix P(2|0) calculated from the data.")
+# cPT = CPT(theData, 2, 0, noStates)
+# AppendArray(resultsFile, cPT)
+# AppendString(resultsFile, "")
+#
+# AppendString(resultsFile,"The joint probability matrix P(2&0) calculated from the data.")
+# jPT = JPT(theData, 2, 0, noStates)
+# AppendArray(resultsFile, jPT)
+# AppendString(resultsFile, "")
+#
+# AppendString(resultsFile,"The conditional probability matrix P(2j0) calculated from the joint probability matrix P(2&0).")
+# aCPT = JPT2CPT(jPT)
+# AppendArray(resultsFile, aCPT)
+# AppendString(resultsFile, "")
+#
+# AppendString(resultsFile,"The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network")
+# #To represent a naive network in Python we will use a list containing an entry for each node
+# #(in numeric order) giving the associated probability table: [prior, cpt1, cpt2, cpt3, cpt4, cpt5]
+# naiveBayes = []
+# naiveBayes.append(Prior(theData, 0, noStates))
+# for i in range(1, 6):
+# 	naiveBayes.append(CPT(theData, i, 0, noStates))
+#
+# #print(naiveBayes)
+#
+# #A query is a list of the instantiated states of the child nodes, for example [1,0,3,2,0].
+# #The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network
+# #query = [1,0,3,2,0]
+# AppendString(resultsFile,"Query [4,0,0,0,5]")
+# query = [4,0,0,0,5]
+# pdfOverRoot = Query(query, naiveBayes)
+# AppendList(resultsFile, pdfOverRoot)
+#
+# AppendString(resultsFile, "")
+# AppendString(resultsFile,"Query [6,5,2,5,5] ")
+# query = [6,5,2,5,5]
+# pdfOverRoot = Query(query, naiveBayes)
+# AppendList(resultsFile, pdfOverRoot)
 
-AppendString(resultsFile,"The conditional probability matrix P(2|0) calculated from the data.")
-cPT = CPT(theData, 2, 0, noStates)
-AppendArray(resultsFile, cPT)
-AppendString(resultsFile, "")
-
-AppendString(resultsFile,"The joint probability matrix P(2&0) calculated from the data.")
-jPT = JPT(theData, 2, 0, noStates)
-AppendArray(resultsFile, jPT)
-AppendString(resultsFile, "")
-
-AppendString(resultsFile,"The conditional probability matrix P(2j0) calculated from the joint probability matrix P(2&0).")
-aCPT = JPT2CPT(jPT)
-AppendArray(resultsFile, aCPT)
-AppendString(resultsFile, "")
-
-AppendString(resultsFile,"The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network")
-#To represent a naive network in Python we will use a list containing an entry for each node
-#(in numeric order) giving the associated probability table: [prior, cpt1, cpt2, cpt3, cpt4, cpt5]
-naiveBayes = []
-naiveBayes.append(Prior(theData, 0, noStates))
-for i in range(1, 6):
-	naiveBayes.append(CPT(theData, i, 0, noStates))
-
-#print(naiveBayes)
-
-#A query is a list of the instantiated states of the child nodes, for example [1,0,3,2,0].
-#The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network
-#query = [1,0,3,2,0]
-AppendString(resultsFile,"Query [4,0,0,0,5]")
-query = [4,0,0,0,5]
-pdfOverRoot = Query(query, naiveBayes) 
-AppendList(resultsFile, pdfOverRoot)
-
-AppendString(resultsFile, "")
-AppendString(resultsFile,"Query [6,5,2,5,5] ")
-query = [6,5,2,5,5]
-pdfOverRoot = Query(query, naiveBayes) 
-AppendList(resultsFile, pdfOverRoot)
-
-
+mutInf = MutualInformation([[0.5, 0.], [0., 0.5]])
+print(mutInf)
+mutInf = MutualInformation([[0.25, 0.25], [0.25, 0.25]])
+print(mutInf)

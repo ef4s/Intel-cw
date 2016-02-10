@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import Image
+#import Image
 import glob, os
 import numpy
 # Function to read in data from a file in the format defined by Duncan
@@ -47,62 +47,63 @@ def AppendString(filename, aString):
     f.write('%s\n' % (aString))
     f.close()
 #
-# Image handline functions
-# 
-# These functions turn images into data sets and vice versa
+# #
+# # Image handline functions
+# #
+# # These functions turn images into data sets and vice versa
+# #
+# # Function to turn a principal component into an image and save it. The assumed resolution os 92 by 112 pixels.
+# # The component is a one dimensional representation of an image with each row concatinated
+# def SaveEigenface(component,filename):
+#     theMax = max(component)
+#     theMin = min(component)
+#     scale = 255.0/(theMax-theMin)
+#     eigenfaceImage = map(int,(component - theMin) * scale)
+#     im = Image.new('L',(92,112))
+#     for y in range(im.size[1]):
+#         for x in range(im.size[0]):
+#             im.putpixel((x,y),eigenfaceImage[x+92*y])
+#     im.save(filename)
+# #
+# # Function to convert images into a data format equivalent to the above format where each row of an array is
+# # one image with rows concatinated into a single vector.
+# # The images for this project are assumed to be all of resolution 92 by 112 pixels and are taken from
+# # the current directory in .pgm format
+# def ReadImages():
+#     datain = []
+#     for infile in glob.glob("*.pgm"):
+#         #filename, ext = os.path.splitext(infile)
+#         #print filename
+#         im = Image.open(infile)
+#         pixels = []
+#         for y in range(im.size[1]):
+#             for x in range(im.size[0]):
+#                 pixels.append(im.getpixel((x,y)))
+#         datain.append(pixels)
+#     return datain
 #
-# Function to turn a principal component into an image and save it. The assumed resolution os 92 by 112 pixels.
-# The component is a one dimensional representation of an image with each row concatinated
-def SaveEigenface(component,filename):
-    theMax = max(component)
-    theMin = min(component)
-    scale = 255.0/(theMax-theMin)
-    eigenfaceImage = map(int,(component - theMin) * scale)
-    im = Image.new('L',(92,112))
-    for y in range(im.size[1]):
-        for x in range(im.size[0]):
-            im.putpixel((x,y),eigenfaceImage[x+92*y])
-    im.save(filename)
+# def ReadOneImage(filename):
+#     datain = []
+#     im = Image.open(filename)
+#     for y in range(im.size[1]):
+#         for x in range(im.size[0]):
+#             datain.append(im.getpixel((x,y)))
+#     return datain
 #
-# Function to convert images into a data format equivalent to the above format where each row of an array is 
-# one image with rows concatinated into a single vector.
-# The images for this project are assumed to be all of resolution 92 by 112 pixels and are taken from
-# the current directory in .pgm format
-def ReadImages():
-    datain = []
-    for infile in glob.glob("*.pgm"):
-        #filename, ext = os.path.splitext(infile)
-        #print filename
-        im = Image.open(infile)
-        pixels = []
-        for y in range(im.size[1]):
-            for x in range(im.size[0]):
-                pixels.append(im.getpixel((x,y)))
-        datain.append(pixels)
-    return datain
-
-def ReadOneImage(filename):
-    datain = []
-    im = Image.open(filename)
-    for y in range(im.size[1]):
-        for x in range(im.size[0]):
-            datain.append(im.getpixel((x,y)))
-    return datain
-
-#Functions to save and read an eigenface basis to a file
-#Needed for testing tasks 4.4 to 4.6 in the event that task 4.3 is unattempted or unsucessful
-def WriteEigenfaceBasis(pcBasis):
-    f = open("EigenfaceBasis.txt", "w")
-    for row in range(pcBasis.shape[0]):
-        for col in range(pcBasis.shape[1]):
-            f.write( '%12.10f ' % (pcBasis[row,col]))
-        f.write('\n')
-    f.write('\n\n')
-    f.close()
-def ReadEigenfaceBasis():
-    f = open("PrincipalComponents.txt");
-    datain = []
-    for line in range(10):
-        datain.append(map(float,(f.readline().split())))
-    f.close()
-    return numpy.array(datain)
+# #Functions to save and read an eigenface basis to a file
+# #Needed for testing tasks 4.4 to 4.6 in the event that task 4.3 is unattempted or unsucessful
+# def WriteEigenfaceBasis(pcBasis):
+#     f = open("EigenfaceBasis.txt", "w")
+#     for row in range(pcBasis.shape[0]):
+#         for col in range(pcBasis.shape[1]):
+#             f.write( '%12.10f ' % (pcBasis[row,col]))
+#         f.write('\n')
+#     f.write('\n\n')
+#     f.close()
+# def ReadEigenfaceBasis():
+#     f = open("PrincipalComponents.txt");
+#     datain = []
+#     for line in range(10):
+#         datain.append(map(float,(f.readline().split())))
+#     f.close()
+#     return numpy.array(datain)

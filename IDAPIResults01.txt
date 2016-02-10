@@ -48,3 +48,6 @@ Query [4,0,0,0,5]
 Query [6,5,2,5,5] 
  0.000  0.000  0.000  1.000 
 
+Coursework One Results by ple15
+
+The prior probability of node 0
