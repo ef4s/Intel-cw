@@ -85,20 +85,15 @@ def MutualInformation(jP):
     pX /= sum(pX)
     pY = sum(jP, axis=1)
     pY /= sum(pY)
-    
+       
     # compute the mutual information
-    for x in range(len(jP)):
-        for y in range(len(jP)):
-            if ((jP[x][y] != 0.) or  (pX[x] * pX[y] != 0.)):
-                print(pX[x] * pX[y], jP[x][y])
-                i = jP[x][y] * math.log(jP[x][y] / (pX[x] * pY[y]), 2)
+    for x in range(size(jP, axis=0)):
+        for y in range(size(jP, axis=1)):
+            # Condition to catch for a log(0) error
+            if jP[x][y] * pX[y] * pY[x] != 0.:
+                i = jP[x][y] * math.log(jP[x][y] / (pX[y] * pY[x]), 2)
                 mi += i
-            # print(pX[x], pY[x], math.log(pX[x] / pY[x], 2))
-            # i = pX[x] * math.log(pX[x] / pY[x], 2)
-            # print(i)
-            # mi += i
-
-            # end of coursework 2 task 1
+           
     return mi
 
 
@@ -123,10 +118,13 @@ def DependencyList(depMatrix):
     depList = []
     # Coursework 2 task 3 should be inserted here
     for x in range(len(depMatrix)):
-        for y in range(len(depMatrix)):
+        for y in range(x, len(depMatrix)):
+#            depList.append((depMatrix[x][y], x, y))
             depList.append([depMatrix[x][y], x, y])
-
-    depList2 = sort(depList, axis=0)
+    
+    depList2 = array(depList)
+    depList2 = sort(depList2.view('f8,int,int'), order=['f0'], axis=0).view(float)
+    depList2 = depList2[::-1]
     # end of coursework 2 task 3
     return array(depList2)
 
@@ -140,8 +138,9 @@ def SpanningTreeAlgorithm(depList, noVariables):
 
     # Add arcs in order given, provided resulting structure has no loops
     for arc in depList:
+        print(list(arc[1:]), '--->', spanningTree)
         if(not CausesLoops(spanningTree, arc[1:])):
-            spanningTree.append(arc[1:])
+            spanningTree.append(list(arc[1:]))
     # A loop is given when we can connect L1 with L2 through the spanning tree
     return array(spanningTree)
 
@@ -151,14 +150,23 @@ def SpanningTreeAlgorithm(depList, noVariables):
 #
 def CausesLoops(spanningTree, proposedArc):
     # If start or end nodes do not exist in the spanning tree then we can return false immediately
-
-    leadingEdge = proposedArc
-    visited = proposedArc
+    if proposedArc[0] == proposedArc[1]: return True
+    
+    leadingEdge = [proposedArc[0]]
+    visited = list(proposedArc)
+    
+    tempSTree = list(spanningTree)
 
     # Find all instances of variables in the leading edge, and expand any connected arcs
     # If there are no more instances of the leading edge in the remaining unexpanded tree, remove from leading edge
-    for node in leadingEdge:
-        for arc in spanningTree :
+    while len(leadingEdge) != 0:
+        node = leadingEdge[0]
+        print(node)
+        iArc = len(tempSTree)
+        while iArc > 0:
+            iArc -= 1
+            arc = tempSTree[iArc]
+            print(iArc, arc, '--->', visited)
             if (node in arc):
                 newNode = arc[0]
                 if (arc[0] == node):
@@ -171,12 +179,14 @@ def CausesLoops(spanningTree, proposedArc):
                     # This is a new location, and we should add it to the visited and leading edge lists
                     visited.append(newNode)
                     leadingEdge.append(newNode)
-                    spanningTree.remove(arc)
+                    tempSTree.remove(arc)
+                    
 
         # Since this is a breadth first search, we are now finished with this node and can remove it from the leading
         # edge
 
         leadingEdge.remove(node)
+
 
     # If we've got here then every path has been explored and we have not found a loop
     return False
@@ -308,60 +318,26 @@ def PrincipalComponents(theData):
     # Coursework 4 task 6 ends here
     return array(orthoPhi)
 
+# main program part for Coursework 2
+#
+resultsFile ="IDAPIResults02.txt"
+noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("HepatitisC.txt")
+theData = array(datain)
+AppendString(resultsFile,"Coursework One Results by ple15")
+AppendString(resultsFile,"") #blank line
+AppendString(resultsFile,"The dependency matrix for the HepatitisC dataset")
+depMat = DependencyMatrix(theData, noVariables, noStates)
+AppendArray(resultsFile, depMat)
+AppendString(resultsFile, "")
 
-#
-# main program part for Coursework 1
-#
-# resultsFile ="IDAPIResults01.txt"
-# noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("Neurones.txt")
-# theData = array(datain)
-# AppendString(resultsFile,"Coursework One Results by ple15")
-# AppendString(resultsFile,"") #blank line
-# AppendString(resultsFile,"The prior probability of node 0")
-# prior = Prior(theData, 0, noStates)
-# AppendList(resultsFile, prior)
-# AppendString(resultsFile, "")
-#
-# AppendString(resultsFile,"The conditional probability matrix P(2|0) calculated from the data.")
-# cPT = CPT(theData, 2, 0, noStates)
-# AppendArray(resultsFile, cPT)
-# AppendString(resultsFile, "")
-#
-# AppendString(resultsFile,"The joint probability matrix P(2&0) calculated from the data.")
-# jPT = JPT(theData, 2, 0, noStates)
-# AppendArray(resultsFile, jPT)
-# AppendString(resultsFile, "")
-#
-# AppendString(resultsFile,"The conditional probability matrix P(2j0) calculated from the joint probability matrix P(2&0).")
-# aCPT = JPT2CPT(jPT)
-# AppendArray(resultsFile, aCPT)
-# AppendString(resultsFile, "")
-#
-# AppendString(resultsFile,"The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network")
-# #To represent a naive network in Python we will use a list containing an entry for each node
-# #(in numeric order) giving the associated probability table: [prior, cpt1, cpt2, cpt3, cpt4, cpt5]
-# naiveBayes = []
-# naiveBayes.append(Prior(theData, 0, noStates))
-# for i in range(1, 6):
-# 	naiveBayes.append(CPT(theData, i, 0, noStates))
-#
-# #print(naiveBayes)
-#
-# #A query is a list of the instantiated states of the child nodes, for example [1,0,3,2,0].
-# #The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network
-# #query = [1,0,3,2,0]
-# AppendString(resultsFile,"Query [4,0,0,0,5]")
-# query = [4,0,0,0,5]
-# pdfOverRoot = Query(query, naiveBayes)
-# AppendList(resultsFile, pdfOverRoot)
-#
-# AppendString(resultsFile, "")
-# AppendString(resultsFile,"Query [6,5,2,5,5] ")
-# query = [6,5,2,5,5]
-# pdfOverRoot = Query(query, naiveBayes)
-# AppendList(resultsFile, pdfOverRoot)
+AppendString(resultsFile,"The dependency list for the HepatitisC dataset")
+depList = DependencyList(depMat)
+AppendArray(resultsFile, depList)
+AppendString(resultsFile, "")
 
-#mutInf = MutualInformation([[0.5, 0.], [0., 0.5]])
-#print(mutInf)
-#mutInf = MutualInformation([[0.25, 0.25], [0.25, 0.25]])
-#print(mutInf)
+AppendString(resultsFile,"The spanning tree found for the HepatitisC dataset")
+spanTree = SpanningTreeAlgorithm(depList, noVariables)
+print(spanTree)
+AppendArray(resultsFile, spanTree)
+AppendString(resultsFile, "")
+

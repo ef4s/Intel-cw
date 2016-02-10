@@ -85,14 +85,12 @@ def MutualInformation(jP):
     pX /= sum(pX)
     pY = sum(jP, axis=1)
     pY /= sum(pY)
-    print(pX)
-    print(pY)
+    
     # compute the mutual information
     for x in range(len(jP)):
         for y in range(len(jP)):
-            print(jP[x][y], jP[x][y] / (pX[x] * pY[y]), x, y)
-            if (pX[x] * pX[y] != 0.):
-                print(pX[x] * pX[y])
+            if ((jP[x][y] != 0.) and (pX[x] * pX[y] != 0.)):
+                print(pX[x] * pX[y], jP[x][y])
                 i = jP[x][y] * math.log(jP[x][y] / (pX[x] * pY[y]), 2)
                 mi += i
             # print(pX[x], pY[x], math.log(pX[x] / pY[x], 2))
@@ -153,7 +151,6 @@ def SpanningTreeAlgorithm(depList, noVariables):
 #
 def CausesLoops(spanningTree, proposedArc):
     # If start or end nodes do not exist in the spanning tree then we can return false immediately
-    n = len(spanningTree)
 
     leadingEdge = proposedArc
     visited = proposedArc
@@ -161,7 +158,7 @@ def CausesLoops(spanningTree, proposedArc):
     # Find all instances of variables in the leading edge, and expand any connected arcs
     # If there are no more instances of the leading edge in the remaining unexpanded tree, remove from leading edge
     for node in leadingEdge:
-        for arc in len(spanningTree):
+        for arc in spanningTree :
             if (node in arc):
                 newNode = arc[0]
                 if (arc[0] == node):
@@ -364,7 +361,7 @@ def PrincipalComponents(theData):
 # pdfOverRoot = Query(query, naiveBayes)
 # AppendList(resultsFile, pdfOverRoot)
 
-mutInf = MutualInformation([[0.5, 0.], [0., 0.5]])
-print(mutInf)
-mutInf = MutualInformation([[0.25, 0.25], [0.25, 0.25]])
-print(mutInf)
+#mutInf = MutualInformation([[0.5, 0.], [0., 0.5]])
+#print(mutInf)
+#mutInf = MutualInformation([[0.25, 0.25], [0.25, 0.25]])
+#print(mutInf)
