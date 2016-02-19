@@ -1,0 +1,58 @@
+Coursework Three Results by Peter Efstathiou (ple15)
+
+The MDLSize of the your network for Hepatitis C data set
+1750.6532181
+
+The MDLAccuracy of the your network for Hepatitis C data set
+-9581.70055532
+
+The MDLScore of the your network for Hepatitis C data set
+11332.3537734
+
+The score of your best network with one arc removed
+14757.5074392
+
+
+Coursework Three Results by Peter Efstathiou (ple15)
+
+The MDLSize of the your network for Hepatitis C data set
+3.0
+
+The MDLAccuracy of the your network for Hepatitis C data set
+-6.0
+
+The MDLScore of the your network for Hepatitis C data set
+9.0
+
+The score of your best network with one arc removed
+9.0
+
+Coursework Three Results by Peter Efstathiou (ple15)
+
+The MDLSize of the your network for Hepatitis C data set
+4.5
+
+The MDLAccuracy of the your network for Hepatitis C data set
+-11.2451124978
+
+The MDLScore of the your network for Hepatitis C data set
+15.7451124978
+
+The score of your best network with one arc removed
+15.7451124978
+
+
+Coursework Three Results by Peter Efstathiou (ple15)
+
+The MDLSize of the your network for Hepatitis C data set
+3.0
+
+The MDLAccuracy of the your network for Hepatitis C data set
+-15.6354720234
+
+The MDLScore of the your network for Hepatitis C data set
+18.6354720234
+
+The score of your best network with one arc removed
+18.6354720234
+
