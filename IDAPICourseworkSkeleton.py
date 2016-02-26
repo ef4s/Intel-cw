@@ -10,39 +10,29 @@ from numpy import *
 def Prior(theData, root, noStates):
     prior = zeros((noStates[root]), float )
 # Coursework 1 task 1 should be inserted here
-    bc = bincount(theData[:, root])
-    prior = bc / float(sum(bc))
+    
 # end of Coursework 1 task 1
     return prior
-  
 # Function to compute a CPT with parent node varP and xchild node varC from the data array
 # it is assumed that the states are designated by consecutive integers starting with 0
 def CPT(theData, varC, varP, noStates):
     cPT = zeros((noStates[varC], noStates[varP]), float )
-# Coursework 1 task 2 should be inserted here
-    for row in theData[:,[varC, varP]]:
-    	cPT[row[0], row[1]] += 1
-	
-    cPT /= sum(cPT, axis=0)
+# Coursework 1 task 2 should be inserte4d here
+   
 # end of coursework 1 task 2
     return cPT
-  
 # Function to calculate the joint probability table of two variables in the data set
 def JPT(theData, varRow, varCol, noStates):
     jPT = zeros((noStates[varRow], noStates[varCol]), float )
 #Coursework 1 task 3 should be inserted here 
-    for row in theData[:,[varRow, varCol]]:
-	jPT[row[0], row[1]] += 1
-	
-    jPT /= sum(jPT)
+    
 # end of coursework 1 task 3
     return jPT
 #
 # Function to convert a joint probability table to a conditional probability table
 def JPT2CPT(aJPT):
 #Coursework 1 task 4 should be inserted here 
-    aJPT /= sum(aJPT, axis=0)
-    
+   
 # coursework 1 taks 4 ends here
     return aJPT
 
@@ -51,15 +41,8 @@ def JPT2CPT(aJPT):
 def Query(theQuery, naiveBayes): 
     rootPdf = zeros((naiveBayes[0].shape[0]), float)
 # Coursework 1 task 5 should be inserted here
-#Finally complete the function Query which calculates the probability distribution over the root node of a naive
-# Bayesian network.
-#The returned value is a list (or vector) giving the posterior probability distribution over the states of the root
-#node, for example [0.1,0.3,0.4,0.2].
-    rootPdf += naiveBayes[0]
-    for i in range(len(theQuery)):
-        rootPdf *= naiveBayes[i + 1][theQuery[i]]
+  
 
-    rootPdf /= sum(rootPdf)
 # end of coursework 1 task 5
     return rootPdf
 #
@@ -218,50 +201,14 @@ def PrincipalComponents(theData):
 #
 noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("Neurones.txt")
 theData = array(datain)
-AppendString("results.txt","Coursework One Results by ple15")
+AppendString("results.txt","Coursework One Results by dfg")
 AppendString("results.txt","") #blank line
 AppendString("results.txt","The prior probability of node 0")
 prior = Prior(theData, 0, noStates)
 AppendList("results.txt", prior)
-AppendString("results.txt", "")
-
-AppendString("results.txt","The conditional probability matrix P(2|0) calculated from the data.")
-cPT = CPT(theData, 2, 0, noStates)
-AppendArray("results.txt", cPT)
-AppendString("results.txt", "")
-
-AppendString("results.txt","The joint probability matrix P(2&0) calculated from the data.")
-jPT = JPT(theData, 2, 0, noStates)
-AppendArray("results.txt", jPT)
-AppendString("results.txt", "")
-
-AppendString("results.txt","The conditional probability matrix P(2j0) calculated from the joint probability matrix P(2&0).")
-aCPT = JPT2CPT(jPT)
-AppendArray("results.txt", aCPT)
-AppendString("results.txt", "")
-
-AppendString("results.txt","The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network")
-#To represent a naive network in Python we will use a list containing an entry for each node
-#(in numeric order) giving the associated probability table: [prior, cpt1, cpt2, cpt3, cpt4, cpt5]
-naiveBayes = []
-naiveBayes.append(Prior(theData, 0, noStates))
-for i in range(1, 6):
-	naiveBayes.append(CPT(theData, i, 0, noStates))
-
-#print(naiveBayes)
-
-#A query is a list of the instantiated states of the child nodes, for example [1,0,3,2,0].
-#The results of queries [4,0,0,0,5] and [6, 5, 2, 5, 5] on the naive network
-#query = [1,0,3,2,0]
-AppendString("results.txt","Query [4,0,0,0,5]")
-query = [4,0,0,0,5]
-pdfOverRoot = Query(query, naiveBayes) 
-AppendList("results.txt", pdfOverRoot)
-
-AppendString("results.txt", "")
-AppendString("results.txt","Query [6,5,2,5,5] ")
-query = [6,5,2,5,5]
-pdfOverRoot = Query(query, naiveBayes) 
-AppendList("results.txt", pdfOverRoot)
+#
+# continue as described
+#
+#
 
 

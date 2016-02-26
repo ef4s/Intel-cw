@@ -207,7 +207,8 @@ def CPT_2(theData, child, parent1, parent2, noStates):
     for a, b, c in theData[:, (parent1, parent2, child)]:
         cPT[c, a, b] += 1
         
-    cPT /= sum(c)
+    cPT /= sum(cPT, axis=0)
+    cPT = nan_to_num(cPT)
      
     # End of Coursework 3 task 1
     return cPT
@@ -221,6 +222,7 @@ def ExampleBayesianNetwork(theData, noStates):
     cpt1 = Prior(theData, 1, noStates)
     cpt2 = CPT(theData, 2, 0, noStates)
     cpt3 = CPT_2(theData, 3, 2, 1, noStates)
+    #print(cpt3)
     cpt4 = CPT(theData, 4, 3, noStates)
     cpt5 = CPT(theData, 5, 3, noStates)
     cptList = [cpt0, cpt1, cpt2, cpt3, cpt4, cpt5]
@@ -228,7 +230,21 @@ def ExampleBayesianNetwork(theData, noStates):
 
 
 # Coursework 3 task 2 begins here
-
+def HepCNetwork(theData, noStates):
+    arcList = [[0], [1], [7, 1, 0], [6, 1], [4, 1],  [5, 4], [3, 4], [8, 7], [2, 0]]
+    
+    cpt0 = Prior(theData, 0, noStates)
+    cpt1 = Prior(theData, 1, noStates)
+    cpt2 = CPT_2(theData, 7, 1, 0, noStates)
+    cpt3 = CPT(theData, 6, 1, noStates)
+    cpt4 = CPT(theData, 4, 1, noStates)
+    cpt5 = CPT(theData, 5, 4, noStates)
+    cpt6 = CPT(theData, 3, 4, noStates)
+    cpt7 = CPT(theData, 8, 7, noStates)
+    cpt8 = CPT(theData, 2, 0, noStates)
+    cptList = [cpt0, cpt1, cpt2, cpt3, cpt4, cpt5, cpt6, cpt7, cpt8]
+    
+    return arcList, cptList
 # end of coursework 3 task 2
 #
 
@@ -271,6 +287,7 @@ def JointProbability(dataPoint, arcList, cptList):
         t = cpt
         for node in arc:
               t = t[dataPoint[node]]                
+        #print(t)
         jP *= t
 
     # Coursework 3 task 4 ends here
@@ -297,23 +314,36 @@ def BestNetwork(theData, arcList, cptList, noStates):
     bestScore = MDLScore(theData, arcList, cptList, noStates)
     bestNetwork = list(arcList) # Ensures we make a copy of the arcList
     
-    for i in range(len(arcList)):        
-        arcListPrime = []
-        cptListPrime = []
-        
-        if i > 0:
-            arcListPrime += arcList[:i]
-            cptListPrime += cptList[:i]
+    for i in range(len(arcList)):
+        arc = arcList[i]
+        cpt = cptList[i]
+        arcListPrime = list(arcList)
+        cptListPrime = list(cptList)  
+        # The first element of the list is the child
+        for j in range(1, len(arc)):   
+                    
+                
+                arcListPrime[i] = [arc[0]]
+                
+                if j > 1 :
+                    arcListPrime[i] = arcListPrime[i] + arc[1:j]
+                
+                if j < len(arc) - 1:
+                    arcListPrime[i] = arcListPrime[i] + arc[j + 1:]
+                   
+                cptListPrime[i] = cpt.sum(axis=j)
+                cptListPrime[i] /= cptListPrime[i].sum(axis=0)
+                
+                #if len(arc) == 3:
+                    #print('************{0}**************'.format(i))
+                    #print(cpt, cpt.sum(axis=j), cptListPrime[i].sum(axis=0))
+          
+                BIC = MDLScore(theData, arcListPrime, cptListPrime, noStates)
 
-        if i < len(arcList) - 1: # Note, the -1 is due to the 0 based indexing
-            arcListPrime += arcList[i + 1:]
-            cptListPrime += cptList[i + 1:]
-                       
-        BIC = MDLScore(theData, arcListPrime, cptListPrime, noStates)
-
-        if BIC > bestScore:
-            bestScore = BIC
-            bestNetwork = list(arcListPrime) # Ensures we make a copy of the arcList
+                #print(arcListPrime[i], BIC)
+                if BIC < bestScore:
+                    bestScore = BIC
+                    bestNetwork = list(arcListPrime) # Ensures we make a copy of the arcList
     
 #    return bestNetwork
     return bestScore   
@@ -387,9 +417,10 @@ def PrincipalComponents(theData):
 resultsFile ="IDAPIResults03.txt"
 noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("HepatitisC.txt")
 theData = array(datain)
-arcList, cptList = ExampleBayesianNetwork(theData, noStates)
+# arcList, cptList = ExampleBayesianNetwork(theData, noStates)
+arcList, cptList = HepCNetwork(theData, noStates)
 
-# Parameters to match examples in slides.
+# Parameters to match examples in slides
 # noVariables = 2
 # noRoots = 2
 # noStates = [2, 2]
@@ -404,6 +435,10 @@ arcList, cptList = ExampleBayesianNetwork(theData, noStates)
 # theData = [[0, 0], [1, 0], [1, 1], [1, 1], [1, 1], [0, 0], [0, 0], [1, 1]]
 # cptList = [[3/8.0, 5/8.0],[[1, 0], [1/5.0, 4/5.0]]]
 # cptList = [[3/8.0, 5/8.0],[1/2.0, 1/2.0]]
+
+
+
+
 
 AppendString(resultsFile,"Coursework Three Results by Peter Efstathiou (ple15)")
 AppendString(resultsFile,"") #blank line
@@ -426,4 +461,3 @@ AppendString(resultsFile,"The score of your best network with one arc removed")
 best = BestNetwork(theData, arcList, cptList, noStates)
 AppendString(resultsFile, best)
 AppendString(resultsFile, "")
-
