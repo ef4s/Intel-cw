@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6d08d18-2a4a-4e3f-b193-5b08e5c14e00" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/labels_and_colors.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HepatitisC.txt" afterPath="$PROJECT_DIR$/HepatitisC.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/IDAPICoursework02.py" afterPath="$PROJECT_DIR$/IDAPICoursework02.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/IDAPICourseworkLibrary.py" afterPath="$PROJECT_DIR$/IDAPICourseworkLibrary.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/IDAPICourseworkSkeleton.py" afterPath="$PROJECT_DIR$/IDAPICourseworkSkeleton.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/IDAPIResults02.txt" afterPath="$PROJECT_DIR$/IDAPIResults02.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test.pynb" afterPath="$PROJECT_DIR$/test.pynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/IDAPICoursework04.py" afterPath="$PROJECT_DIR$/IDAPICoursework04.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Variables.txt" afterPath="$PROJECT_DIR$/Variables.txt" />
     </list>
     <ignored path="Intel-cw.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,9 +33,11 @@
       <file leaf-file-name="IDAPICoursework04.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/IDAPICoursework04.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6136364">
-              <caret line="397" column="25" selection-start-line="397" selection-start-column="25" selection-end-line="397" selection-end-column="25" />
-              <folding />
+            <state vertical-scroll-proportion="0.8068182">
+              <caret line="480" column="0" selection-start-line="480" selection-start-column="0" selection-end-line="480" selection-end-column="0" />
+              <folding>
+                <element signature="e#71#107#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -527,9 +524,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/IDAPICoursework04.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6136364">
-          <caret line="397" column="25" selection-start-line="397" selection-start-column="25" selection-end-line="397" selection-end-column="25" />
-          <folding />
+        <state vertical-scroll-proportion="0.8068182">
+          <caret line="480" column="0" selection-start-line="480" selection-start-column="0" selection-end-line="480" selection-end-column="0" />
+          <folding>
+            <element signature="e#71#107#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

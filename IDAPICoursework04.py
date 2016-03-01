@@ -373,9 +373,8 @@ def CreateEigenfaceFiles(theBasis):
     for i in range(len(theBasis)):
         fname = "PrincipalComponent" + str(i) + ".jpg"
         component = theBasis[i]
+
         SaveEigenface(component, fname)
-
-
 # Coursework 4 task 3 begins here
 
 # Coursework 4 task 3 ends here
@@ -383,15 +382,16 @@ def CreateEigenfaceFiles(theBasis):
 def ProjectFace(theBasis, theMean, theFaceImage):
     magnitudes = []
     # Coursework 4 task 4 begins here
-
     xBar = theFaceImage - theMean
     magnitudes = dot(xBar, theBasis)
+
     
     # Coursework 4 task 4 ends here
     return array(magnitudes)
 
 
 def CreatePartialReconstructions(aBasis, aMean, componentMags):
+
     reconstruction = dot(componentMags, aBasis.T)
     reconstruction+= aMean
     
@@ -468,11 +468,13 @@ SaveEigenface(proFace,"proFace.jpg")
 
 meanFace = ReadOneImage("MeanImage.jpg")
 
+
 CreateReconstructions(eigenFaceBasis, proFace)
 
 AppendString(resultsFile,"The component magnitudes for image “c.pgm” in the principal component basis used in task 4.4.")
 # modelScore = MDLScore(theData, arcList, cptList, noStates)
 # AppendString(resultsFile, modelScore)
 # AppendString(resultsFile, "")
+
 
 print("FINISHED")
