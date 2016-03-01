@@ -1,0 +1,12 @@
+#
+# Tell web spider and other robots not to bother looking in the
+# following directories, as they contain nothing of interest.
+#
+# Note: this does not actually stop anyone looking in these directories,
+# it is only a guide.
+#
+
+User-agent: *
+Disallow: /templates/
+Disallow: /template_resources/
+Disallow: /people/search/
