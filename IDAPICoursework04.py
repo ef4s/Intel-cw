@@ -368,45 +368,39 @@ def Covariance(theData):
     # Coursework 4 task 2 ends here
     return covar
 
-
+# Coursework 4 task 3 begins here
 def CreateEigenfaceFiles(theBasis):
     for i in range(len(theBasis)):
         fname = "PrincipalComponent" + str(i) + ".jpg"
         component = theBasis[i]
-
         SaveEigenface(component, fname)
-# Coursework 4 task 3 begins here
-
-# Coursework 4 task 3 ends here
+# Coursework 4 task 3 ends here        
 
 def ProjectFace(theBasis, theMean, theFaceImage):
     magnitudes = []
     # Coursework 4 task 4 begins here
+    # pφ = (px − µx) · Φpca
+    
+    # Compute (px − µx)
     xBar = theFaceImage - theMean
-    magnitudes = dot(xBar, theBasis)
-
+    
+    # Dot multiply by the PCA basis
+    # pφ is an m-dimension vector 
+    magnitudes = dot(xBar, theBasis.T)
     
     # Coursework 4 task 4 ends here
+    
     return array(magnitudes)
 
-
-def CreatePartialReconstructions(aBasis, aMean, componentMags):
-
-    reconstruction = dot(componentMags, aBasis.T)
-    reconstruction+= aMean
-    
-    return reconstruction
-
-def CreateReconstructions(theBasis, theMags):
-    tMag = list(theMags)
-    m = numpy.mean(tMag)
-
-    for i in range(len(theBasis)):
-        tMag += CreatePartialReconstructions(theBasis[i], m, tMag)
-        SaveEigenface(tMag,"Partial Reconstruction" + str(i) + ".jpg")
-
-
 # Coursework 4 task 5 begins here
+def CreatePartialReconstructions(aBasis, aMean, componentMags):
+    # Reconstruct any image with the inverse transform
+    # px = pφ · ΦTpca + µx
+    reconstruction = aMean
+     
+    for i in range(len(componentMags)):
+        reconstruction += (aBasis[i] * componentMags[i])
+        SaveEigenface(reconstruction,"Reconstruction_" + str(len(componentMags)) + "_" + str(i) + ".jpg")    
 
 # Coursework 4 task 5 ends here
 
@@ -417,64 +411,79 @@ def PrincipalComponents(theData):
     # data has so many variables you need to use the Kohonen Lowe method described in lecture 15
     # The output should be a list of the principal components normalised and sorted in descending
     # order of their eignevalues magnitudes
-    xxT = KLCov(theData)
 
-    l, v = linalg.eig(xxT)
+    # 1. Compute the mean mu of the data matrix
+    meanFaces = Mean(theData)
+    
+    # 2. Mean normalisation
+    dataBar = theData - meanFaces
+    # dataBar /= linalg.norm(dataBar)
+    
+    # 3. Compute the eigenvectors and eignevalues of KL covar
+    xxT = KLCov(dataBar)
+    # eVal = lambda, phiPrime = v
+    L, phiPrime = linalg.eig(xxT)
 
-    Phi = dot(theData.T, v)
-    orthoPhit = linalg.norm(Phi)
-
-    sorting = argsort(l)
-
-    for i in sorting:
-        orthoPhi.append(orthoPhit[i])
+    #4. Compute the eigenvector of the covariance matrix S
+    PComponents = numpy.dot(dataBar.T, phiPrime)    
+    PComponents /= linalg.norm(PComponents) 
+    
+    #5. Sort the Principal Components by the largest eigenValue
+    sorting = argsort(L)
+    for i in reversed(sorting):
+        orthoPhi.append(PComponents[:, i])
+    
+    # orthoPhi /= linalg.norm(orthoPhi)     
     # Coursework 4 task 6 ends here
     return array(orthoPhi)
 
 def KLCov(theData):
-    N = len(theData)
-
-    S = 1 / float(N) * dot(theData, theData.T)
+    N = shape(theData)[1]
+    S = (1 / float(N)) * dot(theData, theData.T)
+    #S = dot(theData, theData.T)
     return  S
 
-# main program part for Coursework 2
+# main program part for Coursework 4
 #
 resultsFile ="IDAPIResults04.txt"
-# noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("HepatitisC.txt")
-# theData = array(datain)
-#
-# arcList, cptList = HepCNetwork(theData, noStates)
-#
-# AppendString(resultsFile,"Coursework Four    Results by Peter Efstathiou (ple15)")
-# AppendString(resultsFile,"") #blank line
-# AppendString(resultsFile,"The mean vector Hepatitis C data set")
-# mean = Mean(theData)
-# AppendList(resultsFile, mean)
-# AppendString(resultsFile, "")
-#
-# AppendString(resultsFile,"The covariance matrix of the Hepatitis C data set")
-# covar = Covariance(theData)
-# AppendArray(resultsFile, covar)
-# AppendString(resultsFile, "")
+noVariables, noRoots, noStates, noDataPoints, datain = ReadFile("HepatitisC.txt")
+theData = array(datain)
+
+arcList, cptList = HepCNetwork(theData, noStates)
+
+AppendString(resultsFile,"Coursework Four    Results by Peter Efstathiou (ple15)")
+AppendString(resultsFile,"") #blank line
+AppendString(resultsFile,"The mean vector Hepatitis C data set")
+meanHepC = Mean(theData)
+AppendList(resultsFile, meanHepC)
+AppendString(resultsFile, "")
+
+AppendString(resultsFile,"The covariance matrix of the Hepatitis C data set")
+covar = Covariance(theData)
+AppendArray(resultsFile, covar)
+AppendString(resultsFile, "")
 
 eigenFaceBasis = ReadEigenfaceBasis()
-face = ReadOneImage("c.pgm")
-faceMean = numpy.mean(face)
-CreateEigenfaceFiles(eigenFaceBasis)
-
-proFace = ProjectFace(eigenFaceBasis, faceMean, face)
-
-SaveEigenface(proFace,"proFace.jpg")
-
-meanFace = ReadOneImage("MeanImage.jpg")
-
-
-CreateReconstructions(eigenFaceBasis, proFace)
+cface = array(ReadOneImage("c.pgm"))
+meanFace = array(ReadOneImage("MeanImage.jpg"))
+cFaceProj = ProjectFace(eigenFaceBasis, meanFace, cface)
 
 AppendString(resultsFile,"The component magnitudes for image “c.pgm” in the principal component basis used in task 4.4.")
-# modelScore = MDLScore(theData, arcList, cptList, noStates)
-# AppendString(resultsFile, modelScore)
-# AppendString(resultsFile, "")
+AppendList(resultsFile, cFaceProj)
+AppendString(resultsFile, "")
 
+CreateEigenfaceFiles(eigenFaceBasis)
 
-print("FINISHED")
+CreatePartialReconstructions(eigenFaceBasis, meanFace, cFaceProj)
+
+faces = array(ReadImages())
+
+pc = PrincipalComponents(faces)
+for i in range(len(pc)):
+    SaveEigenface(pc[i],"PC" + str(i) + ".jpg")
+    
+cface = array(ReadOneImage("c.pgm"))
+meanFace = array(ReadOneImage("MeanImage.jpg"))
+cFaceProjPC = ProjectFace(pc, meanFace, cface)
+CreatePartialReconstructions(pc, meanFace, cFaceProjPC)
+
