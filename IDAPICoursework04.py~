@@ -368,14 +368,14 @@ def Covariance(theData):
     # Coursework 4 task 2 ends here
     return covar
 
-
+# Coursework 4 task 3 begins here
 def CreateEigenfaceFiles(theBasis):
     for i in range(len(theBasis)):
         fname = "PrincipalComponent" + str(i) + ".jpg"
         component = theBasis[i]
         SaveEigenface(component, fname)
-        
-# Coursework 4 task 3 begins here
+# Coursework 4 task 3 ends here        
+
 def ProjectFace(theBasis, theMean, theFaceImage):
     magnitudes = []
     # Coursework 4 task 4 begins here
@@ -391,8 +391,6 @@ def ProjectFace(theBasis, theMean, theFaceImage):
     # Coursework 4 task 4 ends here
     
     return array(magnitudes)
-
-# Coursework 4 task 3 ends here
 
 # Coursework 4 task 5 begins here
 def CreatePartialReconstructions(aBasis, aMean, componentMags):
@@ -413,37 +411,31 @@ def PrincipalComponents(theData):
     # data has so many variables you need to use the Kohonen Lowe method described in lecture 15
     # The output should be a list of the principal components normalised and sorted in descending
     # order of their eignevalues magnitudes
-
-    # 1. Compute the mean mu of the data matrix
-    meanFaces = Mean(theData)
     
+    # 1. Compute the mean mu of the data matrix
+    meanFace = Mean(theData)
+
     # 2. Mean normalisation
-    dataBar = theData - meanFaces
-    # dataBar /= linalg.norm(dataBar)
+    U = theData - meanFace
     
     # 3. Compute the eigenvectors and eignevalues of KL covar
-    xxT = KLCov(dataBar)
-    # eVal = lambda, phiPrime = v
-    L, phiPrime = linalg.eig(xxT)
+    UUT = dot(U, U.T) # KLCov(U)
+    L, phiPrime = linalg.eig(UUT)
 
     #4. Compute the eigenvector of the covariance matrix S
-    PComponents = numpy.dot(dataBar.T, phiPrime)    
-    PComponents /= linalg.norm(PComponents) 
-    
-    #5. Sort the Principal Components by the largest eigenValue
+    UTPhiPrime = numpy.dot(U.T, phiPrime)    
+
+    #5. Orthonormalise by dividing each column of UT·Φ' by its magnitude sqrt(λi)
+    for i in range(len(L)):
+        UTPhiPrime[:, i] /= linalg.norm(UTPhiPrime[:, i])
+
+    #6. Sort the Principal Components by the largest eigenValue
     sorting = argsort(L)
     for i in reversed(sorting):
-        orthoPhi.append(PComponents[:, i])
-    
-    # orthoPhi /= linalg.norm(orthoPhi)     
+        orthoPhi.append(UTPhiPrime[:, i])
+      
     # Coursework 4 task 6 ends here
     return array(orthoPhi)
-
-def KLCov(theData):
-    N = shape(theData)[1]
-    S = (1 / float(N)) * dot(theData, theData.T)
-    #S = dot(theData, theData.T)
-    return  S
 
 # main program part for Coursework 4
 #
@@ -487,5 +479,5 @@ for i in range(len(pc)):
 cface = array(ReadOneImage("c.pgm"))
 meanFace = array(ReadOneImage("MeanImage.jpg"))
 cFaceProjPC = ProjectFace(pc, meanFace, cface)
-CreatePartialReconstructions(pc, meanFace, cFaceProjPC)
+CreatePartialReconstructions(pc, Mean(faces), cFaceProjPC)
 
